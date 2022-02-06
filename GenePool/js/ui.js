@@ -1089,8 +1089,8 @@ function showPanel()
 		openPanelButton.innerHTML = "<<"
 	}else
 		{
-			openPanelButton.style.right = 385;
-			masterPanel.style.width ="370"
+			openPanelButton.style.right = 380;
+			masterPanel.style.width ="365"
 			masterPanel.style.visibility = "visible";
 			openPanelButton.innerHTML = ">>"
 		}
@@ -1102,15 +1102,11 @@ function showPanel()
 // under construction
 //----------------------
 function resize()
-{ 
-    //let rightMargin = 400;
-
-    // I can't get this to work...
-    
-    let masterPanel = document.getElementById( "masterPanel" );
-    //let masterPanelStyle = window.getComputedStyle( masterPanel, null );
-    //console.log( masterPanelStyle.width.toString() )      
-	console.log( masterPanel.clientWidth.toString() )      
+{ 	
+	
+	
+	let masterPanel = document.getElementById( "masterPanel" );
+	//console.log( masterPanel.clientWidth.toString() )      
 	let rightMargin = masterPanel.clientWidth+30;
     
 
@@ -1201,7 +1197,7 @@ document.getElementById('Canvas').onwheel = function(e)
 		
 	
 	let cameraNavAction = -1; 
-	console.log(e.deltaY);
+	//console.log(e.deltaY);
 	if (e.deltaY > 0)
 		{
 			cameraNavAction = CameraNavigationAction.IN; 
@@ -1210,7 +1206,7 @@ document.getElementById('Canvas').onwheel = function(e)
 		{
 			cameraNavAction = CameraNavigationAction.OUT; 
 		}	
-	console.log(cameraNavAction);
+	//console.log(cameraNavAction);
 	if ( cameraNavAction != -1 )
     {
         if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
@@ -1222,7 +1218,7 @@ document.getElementById('Canvas').onwheel = function(e)
 		isScrolling = setTimeout(function() {
 
 		// Run the callback
-		console.log( 'Scrolling has stopped.' );
+		//console.log( 'Scrolling has stopped.' );
 		genePool.stopCameraNavigation( cameraNavAction );
 
 		}, 500);
