@@ -16,9 +16,9 @@ body
     background-color: #889088;
 	/* Hiding scrollbars since we're resizing 
 		WARNING! May impact mobile view*/
-	overflow-y: hidden; /* Hide vertical scrollbar */
-    overflow-x: hidden; /* Hide horizontal scrollbar */
-}
+	/* overflow-y: hidden; Hide vertical scrollbar */
+    /* overflow-x: hidden;  Hide horizontal scrollbar */
+    /* overflow-x: hidden;  Hide horizontal scrollbar */
     /*background-color: #dddddb;*/
 }
 
@@ -37,12 +37,15 @@ body
     color:                  #505050; 
     font-family:            "Arial";
     font-size:              12px;
-	
+	top: 0;
+	bottom: 0;
+  	left: 0;
+  	right: 0;
 }
 
 .menuPanel
 { 
-    position: absolute; 
+  position: absolute; 
     left:   10px;
     top:    10px;
     width:  340px;
@@ -51,7 +54,7 @@ body
     visibility: hidden; 
 
     /* for debugging */
-    /*background-color: #9999ff;*/
+/*    background-color: #9999ff;*/
 }
 
 
@@ -176,26 +179,41 @@ body
     position: absolute; 
 }
 
-#masterPanel
-{
-    position:           absolute; 
-    right:              10px;
-   /* width:              370px; */
-    height:             700px;
-	visibility: hidden;
 
-    /* for debugging */
-    /*background-color:   #ddffff;*/
+#masterPanel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  /*width:370;*/
+  transform: translateX(100%);
+  transition: .3s ease-out;
+  /*display:none;*/
+}
+
+
+/* Small buton tab to hide and show main panel */
+#openPanelButton
+{
+    position: fixed; 
+    right: 5; 
+    top: 5;
+    height: 30px;
+    width: 25px;	
+	
 }
 
 #mainTitle
 {
     position: absolute; 
-    width: 370; 
+    width: 365; 
     height: 30;
     color: #112211; 
     font-family: "Arial black";
-
+	background-color: #9daeae;
+	border-radius:          4px;
+    border-width:           1px; 
+    border-bottom-width:    4px;
     /* for debugging */
     /*background-color: #ffffff;*/
 }
@@ -430,16 +448,7 @@ body
 }
 
 
-/* Small buton tab to hide and show main panel */
-#openPanelButton
-{
-    position: absolute; 
-    right: 5; 
-    top: 5;
-    height: 30px;
-    width: 25px;	
-	
-}
+
 /* -------------------------------------------- */
 /* menu buttonpanel                             */
 /* -------------------------------------------- */
@@ -1378,8 +1387,12 @@ overflow:auto; /* added for the family tree display
     position: absolute; 
     left: 0; 
     top: 460; 
-    width: 150; 
+    width: 365; 
     height: 40; 
+	background-color: #9daeae;
+	border-radius:          4px;
+    border-width:           1px; 
+    border-bottom-width:    4px;
 
     /* for debugging */
     /*background-color: #aaccaa;*/

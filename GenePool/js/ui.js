@@ -1077,24 +1077,33 @@ function notifyGeneTweakPanelMouseDown()
 //----------------------------------------------------
 function showPanel()
 {
- 
+ 	
 	 let masterPanel = document.getElementById("masterPanel");
 	 let openPanelButton = document.getElementById("openPanelButton")
-	console.log( masterPanel.clientWidth.toString() )   
-	if (masterPanel.clientWidth > 0){
+	
+		 
+	
+	
+	if (masterPanel.style.transform== "translateX(0%)"){
+		console.log ("Shrinking");
 	    openPanelButton.style.right = 5;
-		masterPanel.style.width ="0"		
-		masterPanel.style.visibility = "hidden";
+		masterPanel.style.diplay = "none";
+		masterPanel.style.transform = "translateX(100%)";
 		openPanelButton.style.right = 5;
 		openPanelButton.innerHTML = "<<"
+		console.log(masterPanel.clientWidth); 
+		//resize(100);
 	}else
 		{
-			openPanelButton.style.right = 380;
-			masterPanel.style.width ="365"
-			masterPanel.style.visibility = "visible";
-			openPanelButton.innerHTML = ">>"
-		}
-	resize()
+		console.log( "Growing" );
+		openPanelButton.style.right = 380;
+		masterPanel.style.width = 370;
+		masterPanel.style.transform = "translateX(0%)";
+		openPanelButton.innerHTML = ">>"
+//resize(0);
+	}
+	
+	
 			
 }
 
@@ -1104,18 +1113,20 @@ function showPanel()
 function resize()
 { 	
 	
+	//Let's not worry about MasterPanel, let it be an overlay that we can hide/show
 	
-	let masterPanel = document.getElementById( "masterPanel" );
+	//let masterPanel = document.getElementById( "masterPanel" );
 	//console.log( masterPanel.clientWidth.toString() )      
-	let rightMargin = masterPanel.clientWidth+30;
-    
-
-    let width  = window.innerWidth  - rightMargin;
+	//let rightMargin = masterPanel.clientWidth+30;
+   
+	
+	
+	
+    let width  = window.innerWidth;//-rightMargin;
     let height = window.innerHeight;
     
 //if ( width  < rightMargin ) { width = rightMargin; }
-    
-    canvasID.width  = width;
+    canvasID.width  = width-15;
     canvasID.height = height - 15;
     
 ///temp fix until I fix the simulation to take non-square proportions    
@@ -1189,7 +1200,8 @@ document.getElementById('Canvas').onwheel = function(e)
 	//-----------------------------
     // Simulating in and out keys for camera navigation
 	// Add a timer to catch when the wheel stops and initiate the equivalent of a key-up
-	// Half second timer feels good, less than that feels like it's stopping too early.
+	// Just under galf second timer feels alright, less than that feels like it's stopping too early.
+	// This should be adjusted at some point to feel more natural its not quite right yet
     //-----------------------------
 	
 	e = e || window.event;
@@ -1221,7 +1233,7 @@ document.getElementById('Canvas').onwheel = function(e)
 		//console.log( 'Scrolling has stopped.' );
 		genePool.stopCameraNavigation( cameraNavAction );
 
-		}, 500);
+		}, 400);
 		
     }
 	
