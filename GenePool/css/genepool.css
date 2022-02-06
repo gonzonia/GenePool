@@ -174,8 +174,9 @@ body
 {
     position:           absolute; 
     right:              10px;
-    width:              370px; 
+   /* width:              370px; */
     height:             700px;
+	visibility: hidden;
 
     /* for debugging */
     /*background-color:   #ddffff;*/
@@ -423,10 +424,16 @@ body
 }
 
 
-
-
-
-
+/* Small buton tab to hide and show main panel */
+#openPanelButton
+{
+    position: absolute; 
+    right: 5; 
+    top: 5;
+    height: 30px;
+    width: 25px;	
+	
+}
 /* -------------------------------------------- */
 /* menu buttonpanel                             */
 /* -------------------------------------------- */
@@ -474,6 +481,7 @@ body
     top:    229px; 
     width:  365px; 
     height: 450px;
+	
 }
 
 
@@ -1209,6 +1217,7 @@ height:         105px;
 #infoPanel
 {
 /* inherits from menuPanel*/
+	
 }
 
 

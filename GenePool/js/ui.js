@@ -39,13 +39,18 @@ function initializeUI()
     
     _graph.initialize();      
   
+	
+	
+	
+	
     //--------------------------------------------------
     // This starts an update loop that is called 
     // periodically to adjust UI states and stuff. 
     //--------------------------------------------------
     //console.log( "setTimeout" );
-        
+    
     setTimeout( "updateUI()", 1 );
+	
  }
 
 
@@ -1067,21 +1072,47 @@ function notifyGeneTweakPanelMouseDown()
 }
 
 
+//-------------------------------------------
+// This is used to hide and show the master panel
+//----------------------------------------------------
+function showPanel()
+{
+ 
+	 let masterPanel = document.getElementById("masterPanel");
+	 let openPanelButton = document.getElementById("openPanelButton")
+	console.log( masterPanel.clientWidth.toString() )   
+	if (masterPanel.clientWidth > 0){
+	    openPanelButton.style.right = 5;
+		masterPanel.style.width ="0"		
+		masterPanel.style.visibility = "hidden";
+		openPanelButton.style.right = 5;
+		openPanelButton.innerHTML = "<<"
+	}else
+		{
+			openPanelButton.style.right = 385;
+			masterPanel.style.width ="370"
+			masterPanel.style.visibility = "visible";
+			openPanelButton.innerHTML = ">>"
+		}
+	resize()
+			
+}
 
 //----------------------
 // under construction
 //----------------------
 function resize()
 { 
-    let rightMargin = 400;
+    //let rightMargin = 400;
 
     // I can't get this to work...
-    /*
+    
     let masterPanel = document.getElementById( "masterPanel" );
-    let masterPanelStyle = window.getComputedStyle( masterPanel, null );
-    console.log( masterPanelStyle.width.toString() )      
-    let rightMargin = masterPanelStyle.width;
-    */
+    //let masterPanelStyle = window.getComputedStyle( masterPanel, null );
+    //console.log( masterPanelStyle.width.toString() )      
+	console.log( masterPanel.clientWidth.toString() )      
+	let rightMargin = masterPanel.clientWidth+30;
+    
 
     let width  = window.innerWidth  - rightMargin;
     let height = window.innerHeight;
@@ -1112,6 +1143,7 @@ function resize()
     */
     
 }
+
 
 
 //------------------------------------------------------------
@@ -1154,7 +1186,50 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
     } 			
 }
 
+document.getElementById('Canvas').onwheel = function(e)
+{
+	
+	
+	//-----------------------------
+    // Simulating in and out keys for camera navigation
+	// Add a timer to catch when the wheel stops and initiate the equivalent of a key-up
+	// Half second timer feels good, less than that feels like it's stopping too early.
+    //-----------------------------
+	
+	e = e || window.event;
+	var isScrolling;
+		
+	
+	let cameraNavAction = -1; 
+	console.log(e.deltaY);
+	if (e.deltaY > 0)
+		{
+			cameraNavAction = CameraNavigationAction.IN; 
+		}
+	if (e.deltaY < 0)
+		{
+			cameraNavAction = CameraNavigationAction.OUT; 
+		}	
+	console.log(cameraNavAction);
+	if ( cameraNavAction != -1 )
+    {
+        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
+        { 
+            genePool.startCameraNavigation( cameraNavAction );
+			clearViewMode(); 
+        }
+		
+		isScrolling = setTimeout(function() {
 
+		// Run the callback
+		console.log( 'Scrolling has stopped.' );
+		genePool.stopCameraNavigation( cameraNavAction );
+
+		}, 500);
+		
+    }
+	
+}
 /*
 //-------------------------------------------------------------------
 // This is a rather hacky way of getting a two-finger translational
@@ -1207,6 +1282,9 @@ document.onkeydown = function(e)
             genePool.startCameraNavigation( cameraNavAction );
             clearViewMode(); 
         }
+		
+		genePool.stopCameraNavigation(cameraNavAction);
+		
     }
     
     //-----------------------------

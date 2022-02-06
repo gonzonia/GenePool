@@ -80,6 +80,10 @@
 		<!-- ------------------------------------------------------------------ -->
 		<!-- all the divs and stuff are below                                   -->
 		<!-- ------------------------------------------------------------------ -->
+		<button 
+                            id      = "openPanelButton" 
+                            class   = "basicButton" 
+                            onClick = "showPanel(); " ><<</button>  
         <div id = "masterPanel">
             <div id = "mainTitle">
                 Gene Pool
@@ -838,9 +842,11 @@
 		<!-- also, show that autotracking is on...                        -->
 		<!-- ------------------------------------------------------------ -->
 		<script type = "text/javascript"> 	
-            resize();
-		    openInfoPanel();
-		    setInfoPage(2);
+           
+		   // openInfoPanel();
+		   setInfoPage(2);
+			//closeAllPanels();
+			 resize();
 		    initializeUI();
         </script>
 	</body>
