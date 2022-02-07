@@ -20,6 +20,10 @@
         <meta property = "og:title"         content = "Gene Pool Swimbots">
         <meta property = "og:description"   content = "Gene Pool is an artificial life simulation invented by Jeffrey Ventrella">
         <meta property = "og:url"           content = "http://www.swimbots.com/genepool/"/>
+		
+		<!--Added for implementation of Hammer.js to implement touch interface --->
+	    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
 	</head>
 	<body 
 		onload = 
@@ -27,10 +31,8 @@
 		     genePool.initialize(); 
 		     genePool.setCanvas( canvas ); 
 		     genePool.setCanvasDimensions( canvasID.width, canvasID.height );
-		     genePool.setShowingViewTrackingMode( true );"  
-		     
-		onresize = "resize();"		
-	>
+		     genePool.setShowingViewTrackingMode( true );"		     
+		onresize = "resize();" >
 	
 		<!-- ------------------------------------------------------------------ -->
 		<!-- the canvas width and height are determined elsewhere...            -->
@@ -75,8 +77,12 @@
 		<script type = "text/javascript" src = "js/saveLoad.js" ></script>
 		<script type = "text/javascript" src = "js/graph.js"    ></script>
 		<script type = "text/javascript" src = "js/info.js"     ></script>
+	    <!--Tyring Hammer.js to implement touch interface --->
+		<script type = "text/javascript" src = "js/hammer.js" 	></script>    
 		<script type = "text/javascript" src = "js/ui.js"       ></script>
-        
+		
+		
+		
 		<!-- ------------------------------------------------------------------ -->
 		<!-- all the divs and stuff are below                                   -->
 		<!-- ------------------------------------------------------------------ -->

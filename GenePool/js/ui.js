@@ -32,6 +32,20 @@ let _tweakGenesCategory         = 0;
 let _runningFast                = false;
 
 
+// Test via a getter in the options object to see if the passive property is accessed
+var supportsPassive = false;
+
+try {
+  var opts = Object.defineProperty({}, 'passive', {
+    get: function() {
+      supportsPassive = true;
+    }
+  });
+  window.addEventListener("testPassive", null, opts);
+  window.removeEventListener("testPassive", null, opts);
+} catch (e) {}
+
+console.log ("supportsPasive:" + supportsPassive)
 //----------------------------
 function initializeUI()
 {
@@ -40,17 +54,40 @@ function initializeUI()
     _graph.initialize();      
   
 	
+   
+	
+	/*var myElement = document.getElementById('Canvas');
+
+	var mc = new Hammer.Manager(myElement);
+
+	// create a pinch and rotate recognizer
+	// these require 2 pointers
+	var pinch = new Hammer.Pinch();
+	var rotate = new Hammer.Rotate();
+
+	// we want to detect both the same time
+	pinch.recognizeWith(rotate);
+
+	// add to the Manager
+	mc.add([pinch, rotate]);
+	
+	mc.get('pinch').set({ enable: true });
+
+
 	
 	
-	
-    //--------------------------------------------------
+
+	mc.on("pinchstart", genePool.startCameraNavigation(CameraNavigationAction.IN));
+	mc.on("pinchend", genePool.stopCameraNavigation(CameraNavigationAction.IN));*/
+
+
     // This starts an update loop that is called 
     // periodically to adjust UI states and stuff. 
     //--------------------------------------------------
     //console.log( "setTimeout" );
     
-    setTimeout( "updateUI()", 1 );
-	
+     setTimeout( "updateUI()", 1 );
+    
  }
 
 
@@ -1058,7 +1095,7 @@ function notifyGeneTweakPanelMouseDown()
     
     if ( selectedSwimbotID === -1 )
     {
-        console.log( "NULL" );
+        console.log( "NULL SWIMBOT SELECTED" );
         closeTweakGenesPanel();
     }
     else
@@ -1193,17 +1230,17 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
     } 			
 }
 
-document.getElementById('Canvas').onwheel = function(e)
+// we can attach the event with passive option
+document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 {
-	
-	
+
 	//-----------------------------
     // Simulating in and out keys for camera navigation
 	// Add a timer to catch when the wheel stops and initiate the equivalent of a key-up
-	// Just under galf second timer feels alright, less than that feels like it's stopping too early.
+	// Just under half second timer feels alright, less than that feels like it's stopping too early.
 	// This should be adjusted at some point to feel more natural its not quite right yet
     //-----------------------------
-	
+	console.log(e);
 	e = e || window.event;
 	var isScrolling;
 		
@@ -1237,7 +1274,8 @@ document.getElementById('Canvas').onwheel = function(e)
 		
     }
 	
-}
+}, { passive: true });
+
 /*
 //-------------------------------------------------------------------
 // This is a rather hacky way of getting a two-finger translational
