@@ -11,6 +11,7 @@
 //                                                                        
 // -------------------------------------------------------------------------- 
 
+
 "use strict";
 
 
@@ -32,62 +33,143 @@ let _tweakGenesCategory         = 0;
 let _runningFast                = false;
 
 
-// Test via a getter in the options object to see if the passive property is accessed
-var supportsPassive = false;
 
-try {
-  var opts = Object.defineProperty({}, 'passive', {
-    get: function() {
-      supportsPassive = true;
-    }
-  });
-  window.addEventListener("testPassive", null, opts);
-  window.removeEventListener("testPassive", null, opts);
-} catch (e) {}
+//Let's try setting up some catches for touch screen
+var myElement = document.getElementById( "Canvas" );
 
-console.log ("supportsPasive:" + supportsPassive)
+// create a simple instance
+// by default, it only adds horizontal recognizers
+var mc = new Hammer(myElement);
+
+// let the pan gesture support all directions.
+// this will block the vertical scrolling on a touch-device while on the element
+mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+
+// listen to events...
+mc.on("panleft", function(ev) {
+	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.LEFT ) ) 
+        { 
+            genePool.startCameraNavigation(CameraNavigationAction.LEFT);
+			clearViewMode(); 
+        }
+   ;
+});
+
+mc.on("panright", function(ev) {
+	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.RIGHT ) ) 
+        { 
+            genePool.startCameraNavigation(CameraNavigationAction.RIGHT);
+			clearViewMode(); 
+        }
+   ;
+});
+mc.on("pandown", function(ev) {
+	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.DOWN ) ) 
+        { 
+            genePool.startCameraNavigation(CameraNavigationAction.DOWN);
+			clearViewMode(); 
+        }
+   ;
+});
+mc.on("panup", function(ev) {
+	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.UP ) ) 
+        { 
+            genePool.startCameraNavigation(CameraNavigationAction.UP);
+			clearViewMode(); 
+        }
+   ;
+});
+mc.on("panend", function(ev) {
+	//console.log(ev);
+	if (genePool.getCameraNavigationActive( CameraNavigationAction.LEFT ) ) 
+        { 
+            genePool.stopCameraNavigation(CameraNavigationAction.LEFT);
+			clearViewMode(); 
+        }
+	
+	if (genePool.getCameraNavigationActive( CameraNavigationAction.RIGHT ) ) 
+        { 
+            genePool.stopCameraNavigation(CameraNavigationAction.RIGHT);
+			clearViewMode(); 
+        }
+	
+	if (genePool.getCameraNavigationActive( CameraNavigationAction.UP ) ) 
+        { 
+            genePool.stopCameraNavigation(CameraNavigationAction.UP);
+			clearViewMode(); 
+        }
+	
+	if (genePool.getCameraNavigationActive( CameraNavigationAction.DOWN ) ) 
+        { 
+            genePool.stopCameraNavigation(CameraNavigationAction.DOWN);
+			clearViewMode(); 
+        }
+   ;
+});
+
+//Turn Pinch on
+mc.get('pinch').set({ enable: true });
+mc.on("pinchin", function(ev){
+	let cameraNavAction = -1; 
+
+	cameraNavAction = CameraNavigationAction.IN; 
+
+	//console.log(cameraNavAction);
+	if ( cameraNavAction != -1 )
+    {
+        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
+        { 
+            genePool.startCameraNavigation( cameraNavAction );
+			clearViewMode(); 
+        }
+		
+	}});
+mc.on("pinchout", function(ev){
+	let cameraNavAction = -1; 
+
+	cameraNavAction = CameraNavigationAction.OUT; 
+
+	//console.log(cameraNavAction);
+	if ( cameraNavAction != -1 )
+    {
+        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
+        { 
+            genePool.startCameraNavigation( cameraNavAction );
+			clearViewMode(); 
+        }
+		
+	}});
+mc.on("pinchend", function(ev){
+	
+	
+
+	//console.log(cameraNavAction);
+	
+        if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.IN ) ) 
+        { 
+            genePool.stopCameraNavigation( CameraNavigationAction.IN );
+			clearViewMode(); 
+        }
+		if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.OUT ) ) 
+        { 
+            genePool.stopCameraNavigation( CameraNavigationAction.OUT );
+			clearViewMode(); 
+        }
+		
+	});
+
 //----------------------------
 function initializeUI()
 {
     initializeEcosystemUI();    
     
     _graph.initialize();      
-  
-	
-   
-	
-	/*var myElement = document.getElementById('Canvas');
+ 
 
-	var mc = new Hammer.Manager(myElement);
-
-	// create a pinch and rotate recognizer
-	// these require 2 pointers
-	var pinch = new Hammer.Pinch();
-	var rotate = new Hammer.Rotate();
-
-	// we want to detect both the same time
-	pinch.recognizeWith(rotate);
-
-	// add to the Manager
-	mc.add([pinch, rotate]);
-	
-	mc.get('pinch').set({ enable: true });
-
-
-	
-	
-
-	mc.on("pinchstart", genePool.startCameraNavigation(CameraNavigationAction.IN));
-	mc.on("pinchend", genePool.stopCameraNavigation(CameraNavigationAction.IN));*/
-
-
-    // This starts an update loop that is called 
-    // periodically to adjust UI states and stuff. 
-    //--------------------------------------------------
-    //console.log( "setTimeout" );
     
      setTimeout( "updateUI()", 1 );
-    
+  
  }
 
 
@@ -1122,22 +1204,20 @@ function showPanel()
 	
 	
 	if (masterPanel.style.transform== "translateX(0%)"){
-		console.log ("Shrinking");
+		//console.log ("Shrinking");
 	    openPanelButton.style.right = 5;
 		masterPanel.style.diplay = "none";
 		masterPanel.style.transform = "translateX(100%)";
 		openPanelButton.style.right = 5;
 		openPanelButton.innerHTML = "<<"
 		console.log(masterPanel.clientWidth); 
-		//resize(100);
 	}else
 		{
-		console.log( "Growing" );
+	//	console.log( "Growing" );
 		openPanelButton.style.right = 380;
 		masterPanel.style.width = 370;
 		masterPanel.style.transform = "translateX(0%)";
 		openPanelButton.innerHTML = ">>"
-//resize(0);
 	}
 	
 	
@@ -1161,10 +1241,10 @@ function resize()
 	
     let width  = window.innerWidth;//-rightMargin;
     let height = window.innerHeight;
-    
+   
 //if ( width  < rightMargin ) { width = rightMargin; }
-    canvasID.width  = width-15;
-    canvasID.height = height - 15;
+    canvasID.width  = width -35;
+    canvasID.height = height - 35;
     
 ///temp fix until I fix the simulation to take non-square proportions    
 //canvasID.height = canvasID.width;    // make it square...
@@ -1230,17 +1310,32 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
     } 			
 }
 
-// we can attach the event with passive option
+
+
+
+// Catch the mousewheel with a passive function, we're going to try this with touch too.
 document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 {
 
+    
+  
+
+
+    // This starts an update loop that is called 
+    // periodically to adjust UI states and stuff. 
+    //--------------------------------------------------
+    //console.log( "setTimeout" );
+    
 	//-----------------------------
     // Simulating in and out keys for camera navigation
 	// Add a timer to catch when the wheel stops and initiate the equivalent of a key-up
 	// Just under half second timer feels alright, less than that feels like it's stopping too early.
 	// This should be adjusted at some point to feel more natural its not quite right yet
     //-----------------------------
-	console.log(e);
+   
+	//console.log(e);
+	//e.preventDefault();
+
 	e = e || window.event;
 	var isScrolling;
 		
@@ -1255,6 +1350,7 @@ document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 		{
 			cameraNavAction = CameraNavigationAction.OUT; 
 		}	
+    
 	//console.log(cameraNavAction);
 	if ( cameraNavAction != -1 )
     {
@@ -1270,7 +1366,7 @@ document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 		//console.log( 'Scrolling has stopped.' );
 		genePool.stopCameraNavigation( cameraNavAction );
 
-		}, 400);
+		}, 500);
 		
     }
 	
