@@ -197,7 +197,7 @@ function Camera()
 
 		    let dampening = ONE - ( ( _scale - limit ) / ( POOL_WIDTH - limit ) );
 		    		    
-		    console.log( dampening );
+		 //   console.log( dampening );
 		    
 		    
 		    _velocity.x *= dampening;

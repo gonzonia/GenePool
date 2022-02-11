@@ -34,131 +34,6 @@ let _runningFast                = false;
 
 
 
-//Let's try setting up some catches for touch screen
-var myElement = document.getElementById( "Canvas" );
-
-// create a simple instance
-// by default, it only adds horizontal recognizers
-var mc = new Hammer(myElement);
-
-// let the pan gesture support all directions.
-// this will block the vertical scrolling on a touch-device while on the element
-mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-
-
-// listen to events...
-mc.on("panleft", function(ev) {
-	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.LEFT ) ) 
-        { 
-            genePool.startCameraNavigation(CameraNavigationAction.LEFT);
-			clearViewMode(); 
-        }
-   ;
-});
-
-mc.on("panright", function(ev) {
-	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.RIGHT ) ) 
-        { 
-            genePool.startCameraNavigation(CameraNavigationAction.RIGHT);
-			clearViewMode(); 
-        }
-   ;
-});
-mc.on("pandown", function(ev) {
-	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.DOWN ) ) 
-        { 
-            genePool.startCameraNavigation(CameraNavigationAction.DOWN);
-			clearViewMode(); 
-        }
-   ;
-});
-mc.on("panup", function(ev) {
-	if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.UP ) ) 
-        { 
-            genePool.startCameraNavigation(CameraNavigationAction.UP);
-			clearViewMode(); 
-        }
-   ;
-});
-mc.on("panend", function(ev) {
-	//console.log(ev);
-	if (genePool.getCameraNavigationActive( CameraNavigationAction.LEFT ) ) 
-        { 
-            genePool.stopCameraNavigation(CameraNavigationAction.LEFT);
-			clearViewMode(); 
-        }
-	
-	if (genePool.getCameraNavigationActive( CameraNavigationAction.RIGHT ) ) 
-        { 
-            genePool.stopCameraNavigation(CameraNavigationAction.RIGHT);
-			clearViewMode(); 
-        }
-	
-	if (genePool.getCameraNavigationActive( CameraNavigationAction.UP ) ) 
-        { 
-            genePool.stopCameraNavigation(CameraNavigationAction.UP);
-			clearViewMode(); 
-        }
-	
-	if (genePool.getCameraNavigationActive( CameraNavigationAction.DOWN ) ) 
-        { 
-            genePool.stopCameraNavigation(CameraNavigationAction.DOWN);
-			clearViewMode(); 
-        }
-   ;
-});
-
-//Turn Pinch on
-mc.get('pinch').set({ enable: true });
-mc.on("pinchin", function(ev){
-	let cameraNavAction = -1; 
-
-	cameraNavAction = CameraNavigationAction.IN; 
-
-	//console.log(cameraNavAction);
-	if ( cameraNavAction != -1 )
-    {
-        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
-        { 
-            genePool.startCameraNavigation( cameraNavAction );
-			clearViewMode(); 
-        }
-		
-	}});
-mc.on("pinchout", function(ev){
-	let cameraNavAction = -1; 
-
-	cameraNavAction = CameraNavigationAction.OUT; 
-
-	//console.log(cameraNavAction);
-	if ( cameraNavAction != -1 )
-    {
-        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
-        { 
-            genePool.startCameraNavigation( cameraNavAction );
-			clearViewMode(); 
-        }
-		
-	}});
-mc.on("pinchend", function(ev){
-	
-	
-
-	//console.log(cameraNavAction);
-	
-        if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.IN ) ) 
-        { 
-            genePool.stopCameraNavigation( CameraNavigationAction.IN );
-			clearViewMode(); 
-        }
-		if ( ! genePool.getCameraNavigationActive( CameraNavigationAction.OUT ) ) 
-        { 
-            genePool.stopCameraNavigation( CameraNavigationAction.OUT );
-			clearViewMode(); 
-        }
-		
-	});
-
 //----------------------------
 function initializeUI()
 {
@@ -171,7 +46,6 @@ function initializeUI()
      setTimeout( "updateUI()", 1 );
   
  }
-
 
 
 //----------------------------
@@ -1200,20 +1074,19 @@ function showPanel()
 	 let masterPanel = document.getElementById("masterPanel");
 	 let openPanelButton = document.getElementById("openPanelButton")
 	
-		 
-	
-	
 	if (masterPanel.style.transform== "translateX(0%)"){
+		//Panel is displayed, let's hide it. 
 		//console.log ("Shrinking");
 	    openPanelButton.style.right = 5;
 		masterPanel.style.diplay = "none";
 		masterPanel.style.transform = "translateX(100%)";
 		openPanelButton.style.right = 5;
 		openPanelButton.innerHTML = "<<"
-		console.log(masterPanel.clientWidth); 
+		//console.log(masterPanel.clientWidth); 
 	}else
 		{
-	//	console.log( "Growing" );
+		//Panel is hidden, let's show it. 
+		//console.log( "Growing" );
 		openPanelButton.style.right = 380;
 		masterPanel.style.width = 370;
 		masterPanel.style.transform = "translateX(0%)";
@@ -1268,42 +1141,71 @@ function resize()
     
 }
 
-
-
-//------------------------------------------------------------
-document.getElementById( 'Canvas' ).onmousedown = function(e) 
-{
-    clearViewMode();
-
+document.getElementById( 'Canvas' ).addEventListener("touchstart", function(e) {
+	clearViewMode();
+	console.log(e.type);
     if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchDown( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );  
     }
         
     notifyGeneTweakPanelMouseDown();
-}
+  e.preventDefault();
+}, { passive: true });
 
-//------------------------------------------------------------
-document.getElementById( 'Canvas' ).onmousemove = function(e) 
-{
+document.getElementById( 'Canvas' ).addEventListener("mousedown", function(e) {
+	 clearViewMode();
+	console.log(e);
     if ( typeof genePool != "undefined" ) 
+    {    
+        genePool.touchDown( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );  
+    }
+        
+    notifyGeneTweakPanelMouseDown();
+});
+
+document.getElementById( 'Canvas' ).addEventListener("touchmove", function(e) {
+	//console.log("touchmove");
+   if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchMove( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
     }
-}
+  e.preventDefault();
+}, { passive: true });
 
-//------------------------------------------------------------
-document.getElementById( 'Canvas' ).onmouseup = function(e) 
-{
+document.getElementById( 'Canvas' ).addEventListener("mousemove", function(e) {
+	//console.log("onmousemove");
+   if ( typeof genePool != "undefined" ) 
+    {    
+        genePool.touchMove( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
+    }
+ 
+});
+
+document.getElementById( 'Canvas' ).addEventListener("touchend", function(e) {
+	
+  	//console.log("touchend");
     if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchUp( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
-    } 			
-}
+    } 	
+  e.preventDefault();
+});
+
+document.getElementById( 'Canvas' ).addEventListener("mouseup", function(e) {
+	//console.log("onmouseup");
+    if ( typeof genePool != "undefined" ) 
+    {    
+        genePool.touchUp( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
+    } 	
+});
+
 
 //------------------------------------------------------------
 document.getElementById( 'Canvas' ).onmouseout = function(e) 
 {
+	
+	console.log("onmouseout");
     if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchOut( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
@@ -1311,10 +1213,8 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
 }
 
 
-
-
 // Catch the mousewheel with a passive function, we're going to try this with touch too.
-document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
+/*document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 {
 
     
@@ -1370,7 +1270,7 @@ document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
 		
     }
 	
-}, { passive: true });
+}, { passive: true });*/
 
 /*
 //-------------------------------------------------------------------
