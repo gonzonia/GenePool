@@ -31,7 +31,7 @@ let _currentInfoPage            = FIRST_INFO_PAGE;
 let _graph                      = new Graph(); 
 let _tweakGenesCategory         = 0;
 let _runningFast                = false;
-
+let finger_dist 				= 0;
 
 
 //----------------------------
@@ -1141,17 +1141,33 @@ function resize()
     
 }
 
+	
+
+
+//Interaction with the canvas. Touch events are for touch displays. Wheel event is for mouse wheel zooms. 
 document.getElementById( 'Canvas' ).addEventListener("touchstart", function(e) {
+	e.preventDefault();
 	clearViewMode();
-	console.log(e.type);
-    if ( typeof genePool != "undefined" ) 
-    {    
-        genePool.touchDown( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );  
-    }
-        
-    notifyGeneTweakPanelMouseDown();
-  e.preventDefault();
-}, { passive: true });
+	if (e.touches.length > 1){ 
+		//console.log("PINCH ME!");
+		finger_dist = get_distance(e); // Save current finger distance
+	}else{
+		if ( typeof genePool != "undefined" ) 
+		{    
+			genePool.touchDown( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );  
+		}
+		notifyGeneTweakPanelMouseDown();
+	}
+	
+ 
+}, { passive: false });
+
+//Used for pinch zoom
+  function get_distance(e) {
+    var diffX = e.touches[0].clientX - e.touches[1].clientX;
+    var diffY = e.touches[0].clientY - e.touches[1].clientY;
+    return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
+  }
 
 document.getElementById( 'Canvas' ).addEventListener("mousedown", function(e) {
 	 clearViewMode();
@@ -1166,12 +1182,43 @@ document.getElementById( 'Canvas' ).addEventListener("mousedown", function(e) {
 
 document.getElementById( 'Canvas' ).addEventListener("touchmove", function(e) {
 	//console.log("touchmove");
+	e.preventDefault();
+	let cameraNavAction = -1; 
+	
+	if (e.touches.length > 1) { // If pinch-zooming
+		//console.log("REALLY PINCH ME!");
+		//console.log(e.wheelDelta);
+      var new_finger_dist = get_distance(e); // Get current distance between fingers
+      var zoom = 700;
+		//console.log("finer_dist:" + finger_dist);
+		//console.log("new_finger_dist:" + new_finger_dist);
+	    zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
+	    //console.log("zoom:" + zoom);
+	
+	if (new_finger_dist > finger_dist)
+		{
+			//console.log("PINCH IN!");
+			cameraNavAction = CameraNavigationAction.IN; 
+		}
+		
+	if (new_finger_dist < finger_dist)
+		{
+			//console.log("PINCH OUT!");
+			cameraNavAction = CameraNavigationAction.OUT; 
+		}	
+		
+		
+	  ZoomInOut(cameraNavAction, zoom); 
+		
+      finger_dist = new_finger_dist; // Save current distance for next time
+		}else{
    if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchMove( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
     }
-  e.preventDefault();
-}, { passive: true });
+			}
+  
+}, { passive: false });
 
 document.getElementById( 'Canvas' ).addEventListener("mousemove", function(e) {
 	//console.log("onmousemove");
@@ -1200,12 +1247,11 @@ document.getElementById( 'Canvas' ).addEventListener("mouseup", function(e) {
     } 	
 });
 
-
 //------------------------------------------------------------
 document.getElementById( 'Canvas' ).onmouseout = function(e) 
 {
 	
-	console.log("onmouseout");
+	//console.log("onmouseout");
     if ( typeof genePool != "undefined" ) 
     {    
         genePool.touchOut( e.pageX - document.getElementById( 'Canvas' ).offsetLeft, e.pageY - document.getElementById( 'Canvas' ).offsetTop );
@@ -1214,14 +1260,14 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
 
 
 // Catch the mousewheel with a passive function, we're going to try this with touch too.
-/*document.getElementById( 'Canvas' ).addEventListener("mousewheel", function(e)
+document.getElementById( 'Canvas' ).addEventListener("wheel", function(e)
 {
+	e.preventDefault();
+	
+	let cameraNavAction = -1; 
+	var isScrolling;
 
-    
-  
-
-
-    // This starts an update loop that is called 
+		// This starts an update loop that is called 
     // periodically to adjust UI states and stuff. 
     //--------------------------------------------------
     //console.log( "setTimeout" );
@@ -1233,44 +1279,68 @@ document.getElementById( 'Canvas' ).onmouseout = function(e)
 	// This should be adjusted at some point to feel more natural its not quite right yet
     //-----------------------------
    
-	//console.log(e);
-	//e.preventDefault();
-
-	e = e || window.event;
-	var isScrolling;
-		
-	
-	let cameraNavAction = -1; 
-	//console.log(e.deltaY);
-	if (e.deltaY > 0)
+	if (e.wheelDelta > 0)
 		{
 			cameraNavAction = CameraNavigationAction.IN; 
 		}
-	if (e.deltaY < 0)
+	if (e.wheelDelta < 0)
 		{
 			cameraNavAction = CameraNavigationAction.OUT; 
 		}	
-    
-	//console.log(cameraNavAction);
+	
+	var zoom;
+	zoom = e.wheelDelta*10
+	
+	ZoomInOut(cameraNavAction, zoom);
+	/*
 	if ( cameraNavAction != -1 )
     {
-        if ( ! genePool.getCameraNavigationActive( cameraNavAction ) ) 
+        if ( ! genePool.getCameraNavigationActive(cameraNavAction ) ) 
         { 
             genePool.startCameraNavigation( cameraNavAction );
-			clearViewMode(); 
+			
         }
-		
 		isScrolling = setTimeout(function() {
 
 		// Run the callback
-		//console.log( 'Scrolling has stopped.' );
-		genePool.stopCameraNavigation( cameraNavAction );
+			
+			genePool.stopCameraNavigation( cameraNavAction );
+		},Math.abs(e.wheelDelta*10))
+		
+		clearViewMode(); 
+		
+    }*/
+	
 
-		}, 500);
+	//console.log(e);
+	//e.preventDefault();
+}, { passive: false });
+
+function ZoomInOut(cameraNavAction, zoomDelta){
+
+	//Use this one for Pinching
+
+	var isScrolling;
+
+	if ( cameraNavAction != -1 )
+    {
+        if ( ! genePool.getCameraNavigationActive(cameraNavAction ) ) 
+        { 
+            genePool.startCameraNavigation( cameraNavAction );
+			
+        }
+		isScrolling = setTimeout(function() {
+
+		// Run the callback
+			//console.log(zoomDelta*100);
+			genePool.stopCameraNavigation( cameraNavAction );
+		},Math.abs(zoomDelta))
+		
+		clearViewMode(); 
 		
     }
 	
-}, { passive: true });*/
+}
 
 /*
 //-------------------------------------------------------------------
